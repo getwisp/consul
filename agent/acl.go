@@ -187,11 +187,11 @@ func (a *Agent) vetCheckRegisterWithAuthorizer(authz acl.Authorizer, check *stru
 	// Vet the check itself.
 	if len(check.ServiceName) > 0 {
 		if authz.ServiceWrite(check.ServiceName, &authzContext) != acl.Allow {
-			return acl.ErrPermissionDenied
+			return acl.PermissionDenied("Missing service:write on %s", check.CompoundServiceID())
 		}
 	} else {
 		if authz.NodeWrite(a.config.NodeName, &authzContext) != acl.Allow {
-			return acl.ErrPermissionDenied
+			return acl.PermissionDenied("Missing node:write on %s", a.config.NodeName)
 		}
 	}
 
@@ -199,11 +199,11 @@ func (a *Agent) vetCheckRegisterWithAuthorizer(authz acl.Authorizer, check *stru
 	if existing := a.State.Check(check.CompoundCheckID()); existing != nil {
 		if len(existing.ServiceName) > 0 {
 			if authz.ServiceWrite(existing.ServiceName, &authzContext) != acl.Allow {
-				return acl.ErrPermissionDenied
+				return acl.PermissionDenied("Missing service:write on %s", existing.CompoundServiceID())
 			}
 		} else {
 			if authz.NodeWrite(a.config.NodeName, &authzContext) != acl.Allow {
-				return acl.ErrPermissionDenied
+				return acl.PermissionDenied("Missing node:write on %s", a.config.NodeName)
 			}
 		}
 	}
